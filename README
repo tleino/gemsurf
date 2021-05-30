@@ -1,0 +1,56 @@
+gemsurf
+
+A simple interface to gemcache. The gemcache daemon fetches content
+over the Gemini protocol. The gemsurf interface accepts commands
+from standard input stream. The gemsurf interface is meant to be used
+through an actual user interface, such as a graphical interface, or
+through an edbrowse(1)-like interface, i.e. the commands are meant to
+be "typed" by an another command, i.e. gemsurf is meant to be a plugin
+to an another program.
+
+Commands
+========
+
+b <url>
+	browse to an URL
+l <line number>
+	show source code for the given line
+
+Commands TODO
+=============
+
+x <line number>
+	execute link on the given line
+
+Command line options
+====================
+
+-n
+	show line numbers (useful when testing)
+
+Caveats
+=======
+
+At the moment gemcache is expected to be running at 127.0.0.1:1965.
+
+Dependencies
+============
+
+On Linux:
+- LibreTLS (e.g. from https://causal.agency/libretls/)
+- OpenSSL
+- gemcache (https://github.com/tleino/gemcache)
+
+On OpenBSD:
+- gemcache (https://github.com/tleino/gemcache)
+
+Configure & Install
+===================
+
+./configure ~
+make install
+
+See also
+========
+
+https://github.com/tleino/gemcache

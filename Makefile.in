@@ -1,0 +1,46 @@
+SHELL = /bin/sh
+CFLAGS = -g -Wall -pedantic -std=c99 @PKGS_CFLAGS@ @SYSTEM_CFLAGS@
+LDFLAGS = @SYSTEM_LDFLAGS@ @PKGS_LDFLAGS@
+
+prefix = @prefix@
+exec_prefix = $(prefix)
+bindir = $(exec_prefix)/bin
+datarootdir = $(prefix)/share
+mandir = $(datarootdir)/man
+
+INSTALL ?= install
+INSTALLFLAGS ?= -D
+
+SRCS=wrap.c gemtext.c viewbuf.c url.c linebuf.c fetch.c gemsurf.c
+PROG=gemsurf
+MAN=gemsurf.1
+
+OBJS=$(SRCS:.c=.o)
+
+all: $(PROG)
+
+$(PROG): $(OBJS)
+	$(CC) -o$@ $(OBJS) $(LDFLAGS)
+
+.c.o:
+	$(CC) $(CFLAGS) -c $<
+
+clean:
+	rm -f $(OBJS) $(PROG)
+
+install: $(PROG)
+	$(INSTALL) $(INSTALLFLAGS) $(PROG) $(DESTDIR)$(bindir)/$(PROG)
+#	$(INSTALL) $(INSTALLFLAGS) -m 444 $(MAN) \
+#		$(DESTDIR)$(mandir)/man1/$(MAN)
+
+uninstall:
+	rm -f $(DESTDIR)$(bindir)/$(PROG)
+#	rm -f $(DESTDIR)$(mandir)/man1/$(MAN)
+
+fetch.o: fetch.c fetch.h url.h linebuf.h
+gemsurf.o: gemsurf.c fetch.h viewbuf.h gemtext.h
+gemtext.o: gemtext.c gemtext.h wrap.h
+linebuf.o: linebuf.c linebuf.h
+url.o: url.c url.h
+viewbuf.o: viewbuf.c viewbuf.h
+wrap.o: wrap.c wrap.h
