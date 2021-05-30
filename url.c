@@ -79,8 +79,14 @@ parse_hostport(struct url *url, const char *scheme, char *hostport)
 	if ((end = strrchr(hostport, ':')) != NULL) {
 		*end = '\0';
 		url->port = ++end;
+#ifdef __OpenBSD__
 		if (strtonum(url->port, 1, USHRT_MAX, NULL) == 0)
 			url->port = default_port(scheme);
+#else
+		if (atoi(url->port) == 0)
+			url->port = default_port(scheme);
+#endif
+
 	} else {
 		url->port = default_port(scheme);
 	}

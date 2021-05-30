@@ -141,8 +141,12 @@ write_line(int fd, const char *str)
 	newlen = len + strlen("\r\n");
 	if ((s = malloc(newlen + 1)) == NULL)
 		err(1, "malloc");
-	
+
+#ifdef __OpenBSD__
 	strlcpy(s, str, newlen);
+#else
+	snprintf(s, newlen, "%s", str);
+#endif
 	s[newlen-2] = '\r';
 	s[newlen-1] = '\n';
 	s[newlen] = '\0';

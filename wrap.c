@@ -88,7 +88,11 @@ wrap(const char *s, int width, int indent)
 
 			out[i] = '\0';
 
+#ifdef __OpenBSD__
 			strlcat(fout, out, sizeof(fout));
+#else
+			snprintf(fout, sizeof(fout), "%s", out);
+#endif
 			line++;
 
 			/*
