@@ -70,7 +70,7 @@ linebuf_fill_from_fd(struct linebuf *line, int fd)
 
 	n = read(fd, &line->buf[line->sz], line->chunk);
 	if (n < 0)
-		err(1, "read");
+		warn("read");
 	line->sz += n;
 	return n;
 }
