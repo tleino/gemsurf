@@ -38,7 +38,7 @@ check_system() {
 		;;
 		OpenBSD )
 			SYSTEM_CFLAGS=
-			SYSTEM_LDFLAGS="-ltls"
+			SYSTEM_LDFLAGS=""
 		;;
 	esac
 	echo "system: $(uname)"
@@ -66,11 +66,6 @@ check_args() {
 prefix="/usr/local"
 check_args $*
 check_system
-
-case $(uname) in
-	OpenBSD )	check_pkgs openssl ;;
-	* )		check_pkgs openssl libtls ;;
-	esac
 
 echo "PKGS_CFLAGS=${PKGS_CFLAGS}"
 echo "PKGS_LDFLAGS=${PKGS_LDFLAGS}"

@@ -36,12 +36,6 @@ At the moment gemcache is expected to be running at 127.0.0.1:1965.
 Dependencies
 ============
 
-On Linux:
-- LibreTLS (e.g. from https://causal.agency/libretls/)
-- OpenSSL
-- gemcache (https://github.com/tleino/gemcache)
-
-On OpenBSD:
 - gemcache (https://github.com/tleino/gemcache)
 
 Configure & Install
