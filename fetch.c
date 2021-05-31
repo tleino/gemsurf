@@ -2,7 +2,6 @@
 #include "url.h"
 #include "linebuf.h"
 
-#include <tls.h>
 #include <stdlib.h>
 #include <string.h>
 #include <stdlib.h>
