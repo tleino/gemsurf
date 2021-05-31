@@ -38,7 +38,7 @@ uninstall:
 #	rm -f $(DESTDIR)$(mandir)/man1/$(MAN)
 
 fetch.o: fetch.c fetch.h url.h linebuf.h
-gemsurf.o: gemsurf.c fetch.h viewbuf.h gemtext.h
+gemsurf.o: gemsurf.c fetch.h viewbuf.h gemtext.h url.h
 gemtext.o: gemtext.c gemtext.h wrap.h
 linebuf.o: linebuf.c linebuf.h
 url.o: url.c url.h
