@@ -34,7 +34,11 @@ gemtext_puts(char *text, FILE *fp)
 			desc++;
 		while (*desc != '\0' && isspace(*desc))
 			desc++;
-			
+		if (*desc == '\0') {
+			desc = &text[2];
+			while (*desc != '\0' && isspace(*desc))
+				desc++;
+		}
 		print_wrapped_with_leading(fp, " => ", desc, LINE_WIDTH);
 	} else if (text[0] == '>')
 		print_wrapped_with_leading(fp, "\t",
