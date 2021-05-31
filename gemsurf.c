@@ -66,6 +66,7 @@ main(int argc, char *argv[])
 	int lno;
 	char *src, *srcp, *link, *tmp;
 	struct url url;
+	int running;
 
 	while ((ch = getopt(argc, argv, "n")) != -1) {
 		switch (ch) {
@@ -93,7 +94,8 @@ main(int argc, char *argv[])
 	if (urlstr != NULL)
 		fetch(urlstr, linecb, &page);
 
-	while (fgets(buf, sizeof(buf), stdin) != NULL) {
+	running = 1;
+	while (running && fgets(buf, sizeof(buf), stdin) != NULL) {
 		p = buf;
 		buf[strcspn(buf, "\r\n")] = '\0';
 
@@ -167,6 +169,9 @@ main(int argc, char *argv[])
 					puts(VIEWBUF_SRC(page.vb, lno - 1));
 				}
 			}
+			break;
+		case 'q':
+			running = 0;
 			break;
 		}
 	}

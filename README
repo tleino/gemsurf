@@ -17,6 +17,8 @@ l <line number>
 	show source code for the given line
 x <line number>
 	execute link on the given line
+q
+	quit
 
 Command line options
 ====================
