@@ -97,6 +97,8 @@ fetch(const char *s, void (*linecb)(const char *line, void *data), void *data)
 	char *meta;
 	struct url url;
 	char *ustr;
+	char *p;
+	int ret;
 
 	ustr = strdup(s);
 	if (ustr == NULL) {
@@ -116,6 +118,25 @@ fetch(const char *s, void (*linecb)(const char *line, void *data), void *data)
 	if (sess == NULL) {
 		errx(1, "couldn't connect caching server");
 		return -1;
+	}
+
+	if (status >= 10 && status <= 19) {
+		errx(1, "requires input");
+	} else if (status >= 30 && status <= 39) {
+		printf("redirect %s\n", meta);
+		p = strdup(meta);
+		fetch_close(sess);
+		ret = fetch(p, linecb, data);
+		free(p);
+		return ret;
+	} else if (status >= 40 && status <= 49) {
+		errx(1, "temp failure: %s", meta);
+	} else if (status >= 50 && status <= 59) {
+		errx(1, "permanent failure: %s", meta);
+	} else if (status >= 60 && status <= 69) {
+		errx(1, "client certificate required");
+	} else if (status < 20 || status > 29) {
+		errx(1, "unsupported status: %d", status);
 	}
 
 	if (!(strncmp(meta, "text/gemini", strlen("text/gemini")) == 0 ||
