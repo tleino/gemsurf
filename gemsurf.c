@@ -1,10 +1,12 @@
 #include "fetch.h"
 #include "viewbuf.h"
 #include "gemtext.h"
+#include "url.h"
 #include <ctype.h>
 #include <unistd.h>
 #include <stdlib.h>
 #include <string.h>
+#include <err.h>
 
 void
 usage(const char *prog)
@@ -59,9 +61,11 @@ main(int argc, char *argv[])
 	int ch;
 	int linenumbers = 0;
 	char buf[256], *p;
-	char *url;
+	char *urlstr;
 	struct page page = { 0 };
 	int lno;
+	char *src, *srcp, *link, *tmp;
+	struct url url;
 
 	while ((ch = getopt(argc, argv, "n")) != -1) {
 		switch (ch) {
@@ -75,16 +79,19 @@ main(int argc, char *argv[])
 	argc -= optind;
 	argv += optind;
 
-	if (argc)
-		url = *argv;
-	else
-		url = NULL;
+	if (argc) {
+		urlstr = strdup(*argv);
+		if (urlstr == NULL)
+			err(1, "strdup");
+	} else
+		urlstr = NULL;
 
 	page.fp = stdout;
 	page.linenumbers = linenumbers;
 	page.vb = viewbuf_create();
-	if (url != NULL)
-		fetch(url, linecb, &page);
+
+	if (urlstr != NULL)
+		fetch(urlstr, linecb, &page);
 
 	while (fgets(buf, sizeof(buf), stdin) != NULL) {
 		p = buf;
@@ -95,15 +102,61 @@ main(int argc, char *argv[])
 			p++;
 			while (isspace(*p))
 				p++;
-			url = p;
+
+			if (urlstr != NULL)
+				free(urlstr);
+			urlstr = strdup(p);
+			if (urlstr == NULL)
+				err(1, "strdup");
+
 			if (page.vb != NULL)
 				viewbuf_free(page.vb);
 			page.fp = stdout;
 			page.linenumbers = linenumbers;
 			page.vb = viewbuf_create();
-			fetch(url, linecb, &page);
+			fetch(urlstr, linecb, &page);
 			break;
 		case 'x':
+			p++;
+			while (isspace(*p))
+				p++;
+			lno = atoi(p);
+			if (lno > 0) {
+				src = VIEWBUF_SRC(page.vb, lno - 1);
+				if (src[0] != '=' || src[1] != '>')
+					break;
+				srcp = strdup(&src[2]);
+				if (srcp == NULL)
+					err(1, "strdup");
+				while (*srcp != '\0' && isspace(*srcp))
+					srcp++;
+				link = srcp;
+				while (*srcp != '\0' && !isspace(*srcp))
+					srcp++;
+				*srcp = '\0';
+
+				if (strstr(link, "gemini://") == NULL) {
+					url_parse(&url, urlstr);
+					tmp = strdup(url_str(&url, link));
+					if (tmp == NULL)
+						err(1, "strdup");
+					free(urlstr);
+					urlstr = tmp;
+				} else {
+					free(urlstr);
+					urlstr = strdup(link);
+					if (urlstr == NULL)
+						err(1, "strdup");
+				}
+
+				if (page.vb != NULL)
+					viewbuf_free(page.vb);
+				page.fp = stdout;
+				page.linenumbers = linenumbers;
+				page.vb = viewbuf_create();
+				fetch(urlstr, linecb, &page);
+			}
+			break;
 		case 'l':
 			p++;
 			while (isspace(*p))
@@ -117,6 +170,9 @@ main(int argc, char *argv[])
 			break;
 		}
 	}
+
+	if (urlstr != NULL)
+		free(urlstr);
 
 	if (page.vb != NULL)
 		viewbuf_free(page.vb);

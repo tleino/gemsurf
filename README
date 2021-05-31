@@ -15,10 +15,6 @@ b <url>
 	browse to an URL
 l <line number>
 	show source code for the given line
-
-Commands TODO
-=============
-
 x <line number>
 	execute link on the given line
 
