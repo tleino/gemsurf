@@ -11,7 +11,7 @@
 void
 usage(const char *prog)
 {
-	fprintf(stderr, "Usage: %s [-n] [url]\n", prog);
+	fprintf(stderr, "Usage: %s [-n] [-p prompt] [url]\n", prog);
 	exit(1);
 }
 
@@ -65,11 +65,15 @@ main(int argc, char *argv[])
 	struct page page = { 0 };
 	int lno;
 	char *src, *srcp, *link, *tmp;
+	char *prompt = NULL;
 	struct url url;
 	int running;
 
-	while ((ch = getopt(argc, argv, "n")) != -1) {
+	while ((ch = getopt(argc, argv, "np:")) != -1) {
 		switch (ch) {
+		case 'p':
+			prompt = optarg;
+			break;
 		case 'n':
 			linenumbers ^= 1;
 			break;
@@ -93,6 +97,10 @@ main(int argc, char *argv[])
 
 	if (urlstr != NULL)
 		fetch(urlstr, linecb, &page);
+
+	if (prompt != NULL)
+		printf("%s", prompt);
+	fflush(stdout);
 
 	running = 1;
 	while (running && fgets(buf, sizeof(buf), stdin) != NULL) {
@@ -174,6 +182,10 @@ main(int argc, char *argv[])
 			running = 0;
 			break;
 		}
+
+		if (prompt != NULL)
+			printf("%s", prompt);
+		fflush(stdout);
 	}
 
 	if (urlstr != NULL)
